@@ -1,0 +1,44 @@
+from django import forms
+from visitantes.models import Visitante
+
+
+class VisitanteForm(forms.ModelForm):
+    class Meta:
+        model = Visitante
+        fields = [
+            "nome_completo", "cpf", "data_nascimento",
+            "numero_casa", "placa_veiculo"
+        ]
+        error_messages = {
+            "nome_completo": {
+                "required": "O nome do visitante é obrigatorio para registro"
+            },
+
+            "cpf": {
+                "required": "O CPF do visitante é obrigatorio para registro"
+            },
+
+            "data_nascimento": {
+                "required": "A data de nascimento do visitante é obrigatorio para registro",
+                "invalid": "Por favor informe um formato valido para a data de nascimento (DD/MM/AAAA)"
+            },
+
+            "numero_da_casa":{
+                "required": "O Número da casa é obrigatorio para registro"
+            }
+        }
+
+class AutorizaVisitanteForm(forms.ModelForm):
+
+    morador_responsavel = forms.CharField(required=True)
+    
+    class Meta:
+        model = Visitante
+        fields = [
+            "morador_responsavel"
+        ]
+        error_messages = {
+            "morador_responsavel":{
+                "required": "Por favos informe o nome do morador responsavel por altorizar a entrada do visitante"
+            }
+        }
