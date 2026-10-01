@@ -1,101 +1,128 @@
 # Controle de Visitantes
 
-Sistema web em Django para portaria de condomínio, com autenticação de porteiros, registro de visitantes e controle do ciclo completo da visita (aguardando, em visita e finalizada).
+Sistema web para registrar e acompanhar visitas em condomínios. Permite autenticar porteiros, cadastrar visitantes, registrar a autorização de entrada e finalizar visitas com o horário de saída.
 
-## Funcionalidades
-- Login e logout de usuários.
-- Dashboard com indicadores de visitantes.
-- Registro de novos visitantes na portaria.
-- Autorização de entrada com nome do morador responsável.
-- Finalização de visita com registro de horário de saída.
-- Listagem de visitantes recentes com detalhes.
+## Motivação e contexto
 
-## Tecnologias
-- Python 3
-- Django 5.2.x
-- SQLite3
-- `django-widget-tweaks`
-- `python-dotenv`
-- Bootstrap (template SB Admin 2)
+O projeto reúne tarefas comuns da rotina de uma portaria: identificar visitantes, registrar o morador responsável pela autorização e acompanhar quem está no condomínio.
 
-## Estrutura do Projeto
-```text
-controle_visitantes/
-├── apps/
-│   ├── dashboard/
-│   ├── porteiros/
-│   ├── usuarios/
-│   └── visitantes/
-├── controle_visitantes/
-│   ├── settings.py
-│   └── urls.py
-├── static/
-├── templates/
-├── manage.py
-└── README.md
+A aplicação centraliza esses registros e apresenta o andamento das visitas em um dashboard, com informações de chegada, autorização e saída.
+
+## Tecnologias utilizadas
+
+- **Python e Django 5.2:** lógica da aplicação, autenticação e acesso ao banco.
+- **SQLite:** armazenamento dos dados.
+- **Django Templates, HTML e CSS:** construção das páginas.
+- **Bootstrap e template SB Admin 2:** interface visual.
+- **django-widget-tweaks:** personalização dos campos dos formulários.
+- **python-dotenv:** carregamento das variáveis de ambiente.
+
+## Funcionalidades principais
+
+- Login com e-mail e senha e encerramento da sessão.
+- Cadastro do perfil de porteiro no primeiro acesso.
+- Registro de visitantes, incluindo identificação, casa visitada e placa do veículo.
+- Associação do registro ao porteiro responsável.
+- Autorização de entrada com identificação do morador responsável.
+- Registro dos horários de chegada, autorização e saída.
+- Acompanhamento dos estados da visita: aguardando autorização, em visita e finalizada.
+- Dashboard com indicadores por status e quantidade de registros no mês.
+- Consulta dos registros e dos detalhes de cada visita.
+
+## Como rodar localmente
+
+### Pré-requisitos
+
+- Python 3.10 ou superior.
+- pip.
+- Git.
+
+### 1. Clonar o repositório
+
+```bash
+git clone https://github.com/Marllonlp/controle_visitantes.git
+cd controle_visitantes
 ```
 
-## Pré-requisitos
-- Python 3.10+ (recomendado)
-- `pip`
-
-## Instalação
-1. Clone o repositório e entre na pasta do projeto.
-2. Crie e ative um ambiente virtual.
-3. Instale as dependências listadas em `requirements.txt`.
-4. Configure as variáveis de ambiente.
+### 2. Criar o ambiente virtual
 
 ```bash
 python -m venv .venv
+```
+
+Ative o ambiente no Linux ou macOS:
+
+```bash
 source .venv/bin/activate
-pip install -r requirements.txt
+```
+
+No Windows, pelo PowerShell:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+### 3. Instalar as dependências
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+### 4. Configurar as variáveis de ambiente
+
+Copie o arquivo de exemplo no Linux ou macOS:
+
+```bash
 cp .env.example .env
+```
+
+No Windows, pelo PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Gere uma chave Django:
+
+```bash
 python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
-Cole a chave gerada no campo `SECRET_KEY` do arquivo `.env`. O arquivo `.env` é local e não deve ser enviado ao repositório.
+Abra o `.env` e substitua o valor de `SECRET_KEY` pela chave gerada:
 
-As configurações locais padrão usam `DEBUG=True` e permitem `127.0.0.1` e `localhost`. Ajuste `ALLOWED_HOSTS` ao publicar a aplicação e desligue o modo debug.
+```env
+SECRET_KEY=COLE_A_CHAVE_GERADA
+DEBUG=True
+ALLOWED_HOSTS=127.0.0.1,localhost
+```
 
-## Banco de Dados
-Aplique as migrations:
+Esses valores são para execução local. Mantenha o `.env` fora do versionamento.
+
+### 5. Preparar o banco e criar uma conta
 
 ```bash
 python manage.py migrate
-```
-
-Crie um usuário administrador:
-
-```bash
 python manage.py createsuperuser
 ```
 
-## Primeiro Acesso
-Depois de entrar com uma conta, o usuário sem perfil de porteiro será encaminhado ao formulário de cadastro. O perfil fica vinculado automaticamente à conta autenticada; não é necessário acessar o Django Admin para concluir esse passo.
+O banco SQLite será criado no arquivo `db.sqlite3`. Para a conta administrativa, informe o e-mail e a senha solicitados pelo comando.
 
-## Executando o Projeto
+### 6. Iniciar a aplicação
+
 ```bash
 python manage.py runserver
 ```
 
-Acesse no navegador:
-- `http://127.0.0.1:8000/login/`
+Acesse http://127.0.0.1:8000/login/ e entre com a conta criada.
 
-## Fluxo de Uso
-1. Fazer login.
-2. Clicar em **Registrar visitante**.
-3. No detalhe do visitante, autorizar entrada informando o morador responsável.
-4. Finalizar visita quando o visitante sair.
+No primeiro acesso, complete o perfil de porteiro. O sistema vincula esse perfil automaticamente à conta autenticada.
 
-## Rotas Principais
-- `GET /login/` -> tela de autenticação.
-- `GET /logout/` -> logout do usuário.
-- `GET /` -> dashboard inicial.
-- `GET|POST /registrar-visitante/` -> cadastro de visitante.
-- `GET|POST /visitante/<id>/` -> detalhes e autorização de entrada.
-- `POST /visitante/<id>/finalizar-visita` -> finalização da visita.
+## Fluxo de uso
 
-## Observações
-- Idioma padrão: `pt-br`.
-- Fuso horário: `America/Sao_Paulo`.
-- Banco padrão: `db.sqlite3` na raiz do projeto.
+1. Faça login e complete o perfil de porteiro, caso necessário.
+2. Selecione **Registrar visitante** e preencha os dados da visita.
+3. Abra os detalhes do visitante e informe o morador responsável para autorizar a entrada.
+4. Finalize a visita quando o visitante sair.
+5. Acompanhe os registros e os indicadores pelo dashboard.
+
+A autorização é permitida apenas para visitas aguardando entrada. A finalização é permitida apenas para visitas em andamento.
