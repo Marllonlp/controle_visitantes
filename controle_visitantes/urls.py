@@ -2,11 +2,13 @@ from django.contrib import admin
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from apps.dashboard.views import index
+from apps.porteiros.views import completar_cadastro_porteiro
 from apps.visitantes.views import finalizar_visita, informacoes_visitante, registrar_visitante
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("login/", auth_views.LoginView.as_view(template_name="login.html"), name='login'),
+    path("completar-cadastro/", completar_cadastro_porteiro, name="completar_cadastro_porteiro"),
     path("logout/", auth_views.LogoutView.as_view(template_name="logout.html"), name='logout'),
     path("", index, name='index'),
     path("registrar-visitante/", registrar_visitante, name='registrar_visitante'),

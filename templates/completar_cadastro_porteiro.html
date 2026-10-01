@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% load widget_tweaks %}
+
+{% block conteudo %}
+<div class="container">
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">{{ nome_pagina }}</h1>
+  </div>
+
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <h4 class="mb-3 text-primary">Dados do porteiro</h4>
+      <p>Preencha seus dados para começar a usar o controle de visitantes.</p>
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-row">
+          {% for field in form %}
+            <div class="form-group col-md-6">
+              <label for="{{ field.id_for_label }}">{{ field.label }} *</label>
+              {% render_field field class="form-control" placeholder=field.label %}
+              {% for error in field.errors %}
+                <small class="text-danger">{{ error }}</small>
+              {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="text-right">
+          <button class="btn btn-primary" type="submit">Salvar cadastro</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock conteudo %}

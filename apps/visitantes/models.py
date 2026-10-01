@@ -47,9 +47,8 @@ class Visitante(models.Model):
     )
 
     horario_saido = models.DateTimeField(
-        verbose_name="Horario de chegada na portaria",
+        verbose_name="Horário de saída",
         auto_now=False,
-        auto_now_add=True,
         blank=True,
         null=True
     )

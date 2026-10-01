@@ -42,26 +42,20 @@ controle_visitantes/
 ## Instalação
 1. Clone o repositório e entre na pasta do projeto.
 2. Crie e ative um ambiente virtual.
-3. Instale as dependências.
+3. Instale as dependências listadas em `requirements.txt`.
+4. Configure as variáveis de ambiente.
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install "Django>=5.2,<5.3" django-widget-tweaks python-dotenv
-```
-
-## Variáveis de Ambiente
-O projeto usa arquivo `.env` na raiz.
-
-1. Gere uma chave segura (opcional):
-```bash
+pip install -r requirements.txt
+cp .env.example .env
 python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
-2. Crie o `.env`:
-```bash
-echo "SECRET_KEY=sua_chave_secreta" > .env
-```
+Cole a chave gerada no campo `SECRET_KEY` do arquivo `.env`. O arquivo `.env` é local e não deve ser enviado ao repositório.
+
+As configurações locais padrão usam `DEBUG=True` e permitem `127.0.0.1` e `localhost`. Ajuste `ALLOWED_HOSTS` ao publicar a aplicação e desligue o modo debug.
 
 ## Banco de Dados
 Aplique as migrations:
@@ -76,14 +70,8 @@ Crie um usuário administrador:
 python manage.py createsuperuser
 ```
 
-## Configuração Inicial Obrigatória
-Para registrar visitantes, o usuário logado precisa ter um cadastro em `Porteiro` (relação 1:1 com `Usuario`).
-
-Forma simples:
-1. Acesse `/admin` com o superusuário.
-2. Crie um registro em **Porteiros** vinculado ao usuário.
-
-Sem esse vínculo, o registro de visitante falhará.
+## Primeiro Acesso
+Depois de entrar com uma conta, o usuário sem perfil de porteiro será encaminhado ao formulário de cadastro. O perfil fica vinculado automaticamente à conta autenticada; não é necessário acessar o Django Admin para concluir esse passo.
 
 ## Executando o Projeto
 ```bash

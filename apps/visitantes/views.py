@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
 from visitantes.models import Visitante
 from visitantes.forms import VisitanteForm, AutorizaVisitanteForm
 from django.contrib import messages
 from django.utils import timezone
-from django.http import HttpResponseNotAllowed
+from django.views.decorators.http import require_POST
+from apps.porteiros.decorators import porteiro_required
 
-@login_required
+@porteiro_required
 def registrar_visitante(request):
     form = VisitanteForm()
  
@@ -32,12 +32,16 @@ def registrar_visitante(request):
     return render(request, "registrar_visitante.html", contex)
 
 
-@login_required
+@porteiro_required
 def informacoes_visitante(request, id):
 
     visitante = get_object_or_404(Visitante, id=id)
     form = AutorizaVisitanteForm()
     if request.method == "POST":
+        if visitante.status != "AGUARDANDO":
+            messages.error(request, "Somente visitas aguardando autorização podem ser autorizadas.")
+            return redirect("index")
+
         form = AutorizaVisitanteForm(request.POST, instance=visitante)
 
         if form.is_valid():
@@ -59,25 +63,17 @@ def informacoes_visitante(request, id):
     return render(request, "informacoes_visitante.html", contex)
 
 
-@login_required
+@porteiro_required
+@require_POST
 def finalizar_visita(request, id):
+    visitante = get_object_or_404(Visitante, id=id)
+    if visitante.status != "EM_VISITA":
+        messages.error(request, "Somente visitas em andamento podem ser finalizadas.")
+        return redirect("index")
 
-    if request.method == "POST":
-       visitante = get_object_or_404(Visitante, id=id)
-       visitante.status = "FINALIZADO"
-       visitante.horario_saido = timezone.now()
-       visitante.save()
-       
-       messages.success(
-        request,
-        "Visita Finalizada"
-       )
-       return redirect("index") 
-    
-    else:
-        return HttpResponseNotAllowed(
-            ["POST"],
-            "Metodo não permitido"
-        )
+    visitante.status = "FINALIZADO"
+    visitante.horario_saido = timezone.now()
+    visitante.save(update_fields=["status", "horario_saido"])
 
-  
+    messages.success(request, "Visita finalizada.")
+    return redirect("index")
